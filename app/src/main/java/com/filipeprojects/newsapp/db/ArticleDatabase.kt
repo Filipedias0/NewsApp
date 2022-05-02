@@ -11,22 +11,18 @@ import com.filipeprojects.newsapp.models.Article
 @TypeConverters(Converters::class)
 abstract class ArticleDatabase : RoomDatabase() {
 
-    abstract fun getArticleDao(): ArticleDao
+    abstract fun ArticleDao(): ArticleDao
 
     companion object {
-        @Volatile
-        private var instance: ArticleDatabase? = null
+        @Volatile private var instance: ArticleDatabase? = null
         private val LOCK = Any()
 
-        operator fun invoke(context: Context) = instance ?: synchronized(LOCK) {
-            instance ?: createDatabase(context).also { instance = it }
+        operator fun invoke(context: Context)= instance ?: synchronized(LOCK){
+            instance ?: buildDatabase(context).also { instance = it}
         }
 
-        private fun createDatabase(context: Context) =
-            Room.databaseBuilder(
-                context.applicationContext,
-                ArticleDatabase::class.java,
-                "article_db.db"
-            ).build()
+        private fun buildDatabase(context: Context) = Room.databaseBuilder(context,
+            ArticleDatabase::class.java, "todo-list.db")
+            .build()
     }
 }

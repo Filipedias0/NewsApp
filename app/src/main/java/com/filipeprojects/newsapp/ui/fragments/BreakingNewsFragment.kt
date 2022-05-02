@@ -6,11 +6,15 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.filipeprojects.newsapp.R
 import com.filipeprojects.newsapp.adapters.NewsAdapter
+import com.filipeprojects.newsapp.db.ArticleDatabase
+import com.filipeprojects.newsapp.repository.NewsRepository
 import com.filipeprojects.newsapp.ui.NewsActivity
 import com.filipeprojects.newsapp.ui.NewsViewModel
+import com.filipeprojects.newsapp.ui.NewsViewModelProviderFactory
 import com.filipeprojects.newsapp.util.Resource
 import kotlinx.android.synthetic.main.fragment_breaking_news.*
 
@@ -22,7 +26,10 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
     val TAG = "BreakingNewsFragment"
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = (activity as NewsActivity).viewModel
+        val newsRepository = NewsRepository(ArticleDatabase(requireActivity()))
+        val viewModelProviderFactory = NewsViewModelProviderFactory(newsRepository)
+        viewModel = ViewModelProvider((requireActivity()), viewModelProviderFactory).get(NewsViewModel::class.java)
+        setupRecyclerView()
 
         viewModel.breakingNews.observe(viewLifecycleOwner, Observer { response ->
             when(response){
